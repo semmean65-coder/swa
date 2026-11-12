@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مختبر الجسيمات: حالات الماء الثلاث</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2457C5;--yellow:#FFD23F;--ink:#1B2A4A;--paper:#FBFCFF;--grid:rgba(36,87,197,.10);--margin:#E5484D;--ice:#7fd3f5;--liq:#2E86DE;--gas:#9aa7c7;--green:#1f9d6b;--shadow:rgba(27,42,74,.22);
+  color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#FBFCFF;--ink:#1B2A4A;color-scheme:light}}
+:root[data-theme="dark"]{--paper:#FBFCFF;--ink:#1B2A4A}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;height:100%;overflow:hidden;background:#dff1fb;color:var(--ink);font-family:'Tajawal',Tahoma,Arial,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.hidden{display:none !important}
+#gl{position:fixed;inset:0;touch-action:none}#gl canvas{display:block;width:100%;height:100%}
+.paper{background-color:rgba(251,252,255,.95);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:22px 22px;border:2px solid var(--ink);border-radius:18px 7px 16px 9px / 9px 16px 7px 18px;box-shadow:4px 5px 0 var(--shadow);position:relative;color:var(--ink)}
+.paper.lined{padding-right:40px}.paper.lined::before{content:"";position:absolute;top:0;bottom:0;right:24px;width:2px;background:var(--margin);opacity:.7}
+h1,h2,h3,.lz{font-family:'Lalezar','Tajawal',sans-serif;font-weight:400;letter-spacing:0}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:8px 16px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:16px;color:#fff;background:var(--blue);border:2px solid #1B2A4A;border-radius:14px 6px 12px 8px;box-shadow:3px 4px 0 var(--yellow);text-align:center;line-height:1.25}
+.btn:active{transform:translate(2px,3px);box-shadow:1px 1px 0 var(--yellow)}.btn:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.btn.alt{background:var(--yellow);color:#1B2A4A;box-shadow:3px 4px 0 var(--blue)}.btn.ghost{background:var(--paper);color:var(--ink);box-shadow:2px 3px 0 var(--shadow)}.btn.small{min-height:42px;font-size:15px;padding:6px 12px}
+.btn.on{background:var(--green);color:#fff}
+.overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(27,42,74,.38)}
+.modal{width:min(720px,97vw);max-height:92vh;overflow:auto;padding:16px 42px 16px 18px}
+.modal h2{font-size:30px;color:var(--blue);margin:0 0 6px;line-height:1.15}
+/* start */
+#start{background:radial-gradient(circle at 50% 30%,#eaf7ff,#9fd6f3)}
+#start .card{width:min(540px,95vw);padding:22px 44px 18px 22px;text-align:center}
+#start h1{font-size:clamp(38px,8vw,56px);color:var(--blue);margin:0;line-height:1.1}
+#start .sub{font-family:'Lalezar',sans-serif;font-size:24px;margin:2px 0 6px}
+#start .trio{font-size:56px;letter-spacing:10px}
+#start p{font-size:18px;font-weight:700;line-height:1.7;margin:8px 0 14px}
+#start .acts{display:flex;flex-direction:column;gap:10px}
+.b360{display:inline-block;font-family:'Tajawal',sans-serif;font-weight:900;font-size:14px;background:#2457C5;color:#fff;border:2px solid #1B2A4A;border-radius:999px;padding:1px 8px;vertical-align:middle}
+/* hud */
+#hud{position:fixed;inset:0;z-index:10;pointer-events:none}#hud>*{pointer-events:auto}
+#title{position:absolute;right:10px;top:calc(10px + env(safe-area-inset-top,0px));padding:6px 36px 8px 14px;line-height:1.25}
+#title .lz{font-size:22px;color:var(--blue)}#title small{font-size:14px;font-weight:700}
+#tl{position:absolute;left:10px;top:calc(10px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+#bar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));width:min(860px,97vw);padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.turn{position:fixed;z-index:11;top:46%;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;font-size:16px;pointer-events:none;animation:nudge 1s ease-in-out infinite}
+.turn .ar{width:62px;height:62px;border-radius:50%;background:#FFD23F;border:3px solid #1B2A4A;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:3px 4px 0 rgba(27,42,74,.25)}
+#turnL{left:10px;--nx:-8px}#turnR{right:10px;--nx:8px}@keyframes nudge{50%{transform:translateX(var(--nx))}}
+/* observation panel */
+#obs{position:fixed;z-index:13;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(560px,95vw);padding:12px 40px 12px 14px}
+#obs .head{display:flex;align-items:center;gap:10px}#obs .em{font-size:40px;line-height:1}
+#obs h3{margin:0;font-size:24px;color:var(--blue)}#obs .step{font-size:13px;font-weight:800;opacity:.7}
+#oQ{font-size:19px;font-weight:800;line-height:1.6;margin:8px 0}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 12px;border:2px solid rgba(27,42,74,.3);border-radius:12px 6px 12px 6px;font-weight:800;font-size:16px;background:#fff}
+.opt .ic{font-size:24px}.opt.good{background:#c9f0dd;border-color:var(--green)}.opt.bad{background:#ffe1e1;border-color:var(--margin);animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#oHint{background:rgba(229,72,77,.1);border:2px dashed var(--margin);border-radius:10px;padding:6px 10px;font-weight:700;margin-top:8px;line-height:1.6}
+#oSum{font-size:17px;font-weight:700;line-height:1.7}
+.fact{background:#fff6cf;border:2px dashed #c9a21c;border-radius:10px;padding:6px 10px;margin-top:8px;font-weight:700;line-height:1.6}
+.x{all:unset;cursor:pointer;position:absolute;left:10px;top:8px;font-size:26px;font-weight:800;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+/* comparison table */
+table.cmp{width:100%;border-collapse:separate;border-spacing:6px;margin:8px 0}
+.cmp th{font-family:'Lalezar',sans-serif;font-weight:400;font-size:20px;padding:6px;border-radius:10px;color:#fff}
+.cmp th.r{background:#eef3fb;color:var(--ink);font-family:'Tajawal',sans-serif;font-weight:800;font-size:15px}
+.cmp td{background:#fff;border:2px dashed rgba(27,42,74,.25);border-radius:10px;padding:8px 6px;font-weight:800;font-size:15px;text-align:center;min-height:44px;line-height:1.4}
+.cmp td.f{border-style:solid;border-color:var(--green);background:#effaf4}
+.cmp .s{background:#4fb6e6}.cmp .l{background:#2457C5}.cmp .g{background:#7c88a8}
+.tw{overflow-x:auto}
+/* machine */
+#mach{position:fixed;z-index:13;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(560px,95vw);padding:12px 40px 12px 14px}
+#mach h3{margin:0;font-size:24px;color:var(--blue)}
+.thermo{display:flex;align-items:center;gap:10px;margin:10px 0}
+.thermo input{flex:1;accent-color:#E5484D;height:34px}
+#tempVal{font-family:'Lalezar',sans-serif;font-size:30px;min-width:96px;text-align:center;direction:ltr;unicode-bidi:isolate}
+#mState{font-size:18px;font-weight:800}#mText{font-size:16px;font-weight:700;line-height:1.7;margin:6px 0 0}
+/* quiz */
+#qBox .q{font-size:21px;font-weight:800;line-height:1.6;margin:6px 0}
+#qCanvas{display:block;width:100%;max-width:360px;height:180px;margin:6px auto;border:2px solid #1B2A4A;border-radius:14px;background:#f3f9fd}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.three button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;border:3px solid #1B2A4A;border-radius:16px 8px 14px 10px;padding:10px 4px;font-weight:800;font-size:17px;background:#fff}
+.three button span{display:block;font-size:40px;line-height:1.1}
+.three button.good{background:#c9f0dd;border-color:var(--green)}.three button.bad{background:#ffe1e1;border-color:var(--margin);animation:shake .4s}
+#toast{position:fixed;z-index:30;top:calc(84px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);padding:8px 18px;font-weight:800;font-size:16px;white-space:nowrap;opacity:0;transition:opacity .4s;pointer-events:none}
+#coach{position:fixed;inset:0;z-index:14;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#coach .paper{padding:14px 20px;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center}
+#coach .hand{font-size:42px;animation:swipe 1.4s ease-in-out infinite}@keyframes swipe{0%,100%{transform:translateX(-28px)}50%{transform:translateX(28px)}}
+@media (max-width:560px){.cmp th{font-size:16px}.cmp td{font-size:13px}#oQ{font-size:17px}}
+@media (prefers-reduced-motion: reduce){.turn,#coach .hand,.opt.bad,.three button.bad{animation:none}}
+</style>
+</head>
+<body>
+<div id="gl"></div>
+
+<div id="start" class="overlay"><div class="card paper lined">
+  <div class="trio">🧊💧☁️</div>
+  <h1>مختبر الجسيمات <span class="b360">360°</span></h1>
+  <div class="sub">جسيمات الماء في حالاته الثلاث</div>
+  <p>الماء يكون ثلجاً صلباً، وماءً سائلاً، وبخاراً غازياً. قف داخل المختبر، والتفت حولك، وراقب الجسيمات الصغيرة في كل جرة، ثم قارن بينها!</p>
+  <div class="acts"><button class="btn" id="btnGo">ادخل المختبر 360°</button><button class="btn alt" id="btnGoTour">ادخل مع نجمون</button></div>
+  <div style="margin-top:14px;font-size:16px;font-weight:800;color:#2457C5">إعداد: حسين مهدي</div>
+</div></div>
+
+<div id="hud" class="hidden">
+  <div id="title" class="paper lined"><div class="lz">مختبر الجسيمات <span class="b360">360°</span></div><small>قارن جسيمات الماء: صلب، سائل، غاز</small><br><small style="color:#2457C5">إعداد: حسين مهدي</small></div>
+  <div id="tl"><button class="btn alt small" id="btnTable">📋 جدول المقارنة <span id="cnt">0 من 9</span></button><button class="btn ghost small" id="btnSound">🔊 الصوت</button></div>
+  <div id="bar" class="paper">
+    <button class="btn small" id="btnTour">جولة مع نجمون</button>
+    <button class="btn alt small" id="btnMachine">🌡️ آلة الحرارة</button>
+    <button class="btn alt small" id="btnQuiz">🏅 تحدّي المقارنة</button>
+    <button class="btn ghost small" id="btnGyro">📱 حرّك الجهاز</button>
+    <button class="btn ghost small" id="btnNext">أين أذهب؟</button>
+  </div>
+</div>
+<div class="turn hidden" id="turnL"><span class="ar">←</span>التفت</div>
+<div class="turn hidden" id="turnR"><span class="ar">→</span>التفت</div>
+<div id="coach" class="hidden"><div class="paper"><div class="hand">👆↔️</div><b style="font-size:19px">أنت داخل المختبر! انظر حولك 360°</b><span style="font-weight:700">ستجد ثلاث جرار: ثلج، وماء، وبخار. المس أي جرة لتراقبها</span></div></div>
+
+<div id="obs" class="paper lined hidden" role="dialog" aria-live="polite">
+  <button class="x" id="oClose" aria-label="إغلاق">×</button>
+  <div class="head"><span class="em" id="oEm"></span><div><h3 id="oTitle"></h3><div class="step" id="oStep"></div></div></div>
+  <div id="oBody"></div>
+</div>
+
+<div id="mach" class="paper lined hidden" role="dialog">
+  <button class="x" id="mClose" aria-label="إغلاق">×</button>
+  <h3>🌡️ آلة الحرارة</h3>
+  <div class="thermo"><span style="font-size:26px">❄️</span><input type="range" id="temp" min="-20" max="120" value="-10" aria-label="درجة الحرارة"><span style="font-size:26px">🔥</span><div id="tempVal">-10°</div></div>
+  <div id="mState"></div><p id="mText"></p>
+</div>
+
+<div id="table" class="overlay hidden"><div class="modal paper lined">
+  <h2>📋 جدول المقارنة</h2>
+  <p style="font-size:16px;font-weight:700;margin:0">يمتلئ الجدول بما تلاحظه أنت في كل جرة.</p>
+  <div class="tw"><table class="cmp" id="cmp"></table></div>
+  <div id="tMsg" style="font-weight:800;font-size:16px;line-height:1.6"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn" id="tClose">رجوع إلى المختبر</button></div>
+</div></div>
+
+<div id="quiz" class="overlay hidden"><div class="modal paper lined" id="qBox" style="text-align:center">
+  <h2>🏅 تحدّي المقارنة</h2>
+  <div id="qProg" style="font-weight:800;font-size:15px"></div>
+  <canvas id="qCanvas" width="720" height="360"></canvas>
+  <div class="q" id="qText"></div>
+  <div class="three" id="qOpts"><button data-s="solid"><span>🧊</span>صلب</button><button data-s="liquid"><span>💧</span>سائل</button><button data-s="gas"><span>☁️</span>غاز</button></div>
+  <div id="qFb" style="font-size:17px;font-weight:700;line-height:1.6;min-height:1.8em;margin-top:8px"></div>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px"><button class="btn alt hidden" id="qNext">التالي</button><button class="btn ghost" id="qClose">إغلاق</button></div>
+</div></div>
+<div id="toast" class="paper"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+if(!window.THREE){$('#start p').textContent='تعذّر تحميل المحرك. تأكد من الاتصال بالإنترنت ثم أعد تحميل الصفحة.';return;}
+const V3=THREE.Vector3,D=Math.PI/180;const clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
+function wrapA(a){return((a+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI;}
+let seed=9;function rnd(){seed=(seed*16807)%2147483647;return(seed-1)/2147483646;}
+
+/* ---------- what the child compares ---------- */
+const ST={
+  solid:{n:'الحالة الصلبة',w:'الثلج',e:'🧊',ang:270,col:'#4fb6e6',
+    a:{order:'reg',space:'close',move:'vib'},
+    sum:'في الثلج، الجسيمات منتظمة ومتقاربة، وتهتز في أماكنها فقط. لذلك للثلج شكل ثابت.',fact:'جسيمات الثلج مرتبة بنمط فيه فراغات صغيرة، لذلك يطفو الثلج فوق الماء.'},
+  liquid:{n:'الحالة السائلة',w:'الماء',e:'💧',ang:0,col:'#2457C5',
+    a:{order:'irr',space:'close',move:'slide'},
+    sum:'في الماء السائل، الجسيمات متقاربة لكنها غير منتظمة، وتنزلق وتتحرك حول بعضها. لذلك يأخذ الماء شكل الإناء.',fact:'لهذا يجري الماء، ونستطيع أن نصبّه من كوب إلى آخر.'},
+  gas:{n:'الحالة الغازية',w:'بخار الماء',e:'☁️',ang:90,col:'#7c88a8',
+    a:{order:'irr',space:'far',move:'fast'},
+    sum:'في بخار الماء، الجسيمات متباعدة جداً وغير منتظمة، وتتحرك بسرعة في كل الاتجاهات. لذلك ينتشر البخار ويملأ المكان.',fact:'بخار الماء غاز لا نراه. أما السحابة البيضاء فوق الإبريق فهي قطيرات ماء صغيرة تكوّنت عندما برد البخار.'}};
+const KEYS=['solid','liquid','gas'];
+const DIM=[
+  {k:'order',t:'الترتيب',q:'راقب الجسيمات: كيف ترتيبها؟',o:[['reg','📐','منتظمة في صفوف'],['irr','🔀','غير منتظمة']]},
+  {k:'space',t:'المسافة بينها',q:'كم المسافة بين الجسيمات؟',o:[['close','🤏','متقاربة'],['far','↔️','متباعدة جداً']]},
+  {k:'move',t:'الحركة',q:'كيف تتحرك الجسيمات؟',o:[['vib','〰️','تهتز في أماكنها'],['slide','🔄','تنزلق وتتحرك حول بعضها'],['fast','💨','تتحرك بسرعة في كل الاتجاهات']]}];
+const LABEL={reg:'منتظمة في صفوف',irr:'غير منتظمة',close:'متقاربة',far:'متباعدة جداً',vib:'تهتز في أماكنها',slide:'تنزلق حول بعضها',fast:'سريعة في كل اتجاه'};
+const HINT={order:'انظر جيداً: هل الجسيمات مصفوفة في صفوف مثل المقاعد، أم كل واحدة في مكان مختلف؟',space:'هل الجسيمات تكاد تلمس بعضها، أم بينها فراغات كبيرة؟',move:'راقب جسيماً واحداً فقط: هل يبقى في مكانه، أم ينتقل؟ وهل هو بطيء أم سريع؟'};
+const obsDone={solid:{},liquid:{},gas:{}};const firstOK={};
+
+/* ---------- renderer ---------- */
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(innerWidth,innerHeight);renderer.outputEncoding=THREE.sRGBEncoding;
+$('#gl').appendChild(renderer.domElement);
+const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(66,innerWidth/innerHeight,.02,80);camera.rotation.order='YXZ';camera.position.set(0,1.5,0);
+addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();});
+const grad=(()=>{const d=new Uint8Array([110,110,110,255,190,190,190,255,255,255,255,255]);const t=new THREE.DataTexture(d,3,1,THREE.RGBAFormat);t.minFilter=t.magFilter=THREE.NearestFilter;t.needsUpdate=true;return t;})();
+const T=c=>{const m=new THREE.MeshToonMaterial({color:c,gradientMap:grad});m.color.convertSRGBToLinear();return m;};
+const inkMat=(()=>{const m=new THREE.MeshBasicMaterial({color:'#1B2A4A',side:THREE.BackSide});m.onBeforeCompile=s=>{s.vertexShader=s.vertexShader.replace('#include <begin_vertex>','vec3 transformed=position+normal*0.012;');};return m;})();
+function part(geo,mat,x,y,z,parent,ink){const m=new THREE.Mesh(geo,typeof mat==='string'?T(mat):mat);m.position.set(x||0,y||0,z||0);parent.add(m);if(ink!==false)m.add(new THREE.Mesh(geo,inkMat));return m;}
+function cTex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t;}
+scene.background=new THREE.Color('#dff1fb');
+scene.add(new THREE.HemisphereLight('#ffffff','#a9b8c8',1.0));const dl=new THREE.DirectionalLight('#ffffff',.7);dl.position.set(2,6,3);scene.add(dl);
+
+/* ---------- the lab room ---------- */
+const room=new THREE.Group();scene.add(room);
+const floorTex=cTex(256,256,(x,w,h)=>{x.fillStyle='#f4f8fc';x.fillRect(0,0,w,h);x.strokeStyle='rgba(36,87,197,.18)';x.lineWidth=3;for(let i=0;i<=w;i+=64){x.beginPath();x.moveTo(i,0);x.lineTo(i,h);x.stroke();x.beginPath();x.moveTo(0,i);x.lineTo(w,i);x.stroke();}});floorTex.wrapS=floorTex.wrapT=THREE.RepeatWrapping;floorTex.repeat.set(6,6);
+const floor=new THREE.Mesh(new THREE.CircleGeometry(7,64),new THREE.MeshToonMaterial({map:floorTex,gradientMap:grad}));floor.rotation.x=-Math.PI/2;room.add(floor);
+const wallTex=cTex(512,256,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#cfeaf8');g.addColorStop(1,'#eef7fc');x.fillStyle=g;x.fillRect(0,0,w,h);x.strokeStyle='rgba(36,87,197,.10)';x.lineWidth=2;for(let i=0;i<w;i+=32){x.beginPath();x.moveTo(i,0);x.lineTo(i,h);x.stroke();}for(let i=0;i<h;i+=32){x.beginPath();x.moveTo(0,i);x.lineTo(w,i);x.stroke();}});
+wallTex.wrapS=THREE.RepeatWrapping;wallTex.repeat.set(4,1);
+const wall=new THREE.Mesh(new THREE.CylinderGeometry(7,7,4.2,64,1,true),new THREE.MeshBasicMaterial({map:wallTex,side:THREE.BackSide}));wall.position.y=2.1;room.add(wall);
+const ceil=new THREE.Mesh(new THREE.CircleGeometry(7,64),new THREE.MeshBasicMaterial({color:'#f6fbfe',side:THREE.DoubleSide}));ceil.rotation.x=Math.PI/2;ceil.position.y=4.2;room.add(ceil);
+/* shelves and posters on the wall (decor) */
+for(let i=0;i<10;i++){const a=i/10*Math.PI*2+.3;const p=new V3(Math.sin(a)*6.7,0,-Math.cos(a)*6.7);const sh=part(new THREE.BoxGeometry(1.4,.06,.35),'#c9a46a',p.x,1.9,p.z,room);sh.lookAt(0,1.9,0);
+  for(let k=0;k<3;k++){const b=part(new THREE.CylinderGeometry(.08,.08,.26,12),['#7fd3f5','#ffd23f','#ff9fb3','#9fe0b0'][(i+k)%4],0,0,0,room);const q=new V3(-.4+k*.4,0,0).applyQuaternion(sh.quaternion);b.position.set(p.x+q.x,2.06,p.z+q.z);}}
+function sign(text,col,pos,parent){const tex=cTex(512,140,(x,w,h)=>{x.fillStyle='#fff';x.strokeStyle='#1B2A4A';x.lineWidth=10;const r=34;x.beginPath();x.moveTo(r,5);x.lineTo(w-r,5);x.quadraticCurveTo(w-5,5,w-5,r);x.lineTo(w-5,h-r);x.quadraticCurveTo(w-5,h-5,w-r,h-5);x.lineTo(r,h-5);x.quadraticCurveTo(5,h-5,5,h-r);x.lineTo(5,r);x.quadraticCurveTo(5,5,r,5);x.fill();x.stroke();
+  x.fillStyle=col;x.font="64px Lalezar, Tajawal, sans-serif";x.direction='rtl';x.textAlign='center';x.textBaseline='middle';x.fillText(text,w/2,h/2+6);});
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true}));s.renderOrder=20;s.position.copy(pos);s.scale.set(1.25,.34,1);parent.add(s);return s;}
+
+/* ---------- water molecules: one red oxygen and two white hydrogens ---------- */
+const OR=.042,HR=.026,HO=.052,HANG=52.25*D;
+const oGeo=new THREE.SphereGeometry(OR,14,10),hGeo=new THREE.SphereGeometry(HR,10,8);
+function makeJar(key,center,count,mode){const g=new THREE.Group();g.position.copy(center);scene.add(g);
+  part(new THREE.CylinderGeometry(.62,.7,.8,32),'#e9eef6',0,.4,0,g);part(new THREE.CylinderGeometry(.66,.66,.06,32),ST[key]?ST[key].col:'#E5484D',0,.82,0,g);
+  const glass=new THREE.Mesh(new THREE.CylinderGeometry(.56,.56,1.2,40,1,true),new THREE.MeshStandardMaterial({color:'#ffffff',transparent:true,opacity:.18,roughness:.05,side:THREE.DoubleSide,depthWrite:false}));glass.position.y=1.45;g.add(glass);
+  [.85,2.05].forEach(y=>{const r=new THREE.Mesh(new THREE.TorusGeometry(.56,.012,6,48),new THREE.MeshBasicMaterial({color:'#1B2A4A'}));r.rotation.x=Math.PI/2;r.position.y=y;g.add(r);});
+  const lid=part(new THREE.CylinderGeometry(.58,.58,.05,32),'#cfd8e6',0,2.08,0,g);
+  const hit=new THREE.Mesh(new THREE.CylinderGeometry(.75,.75,1.9,12),new THREE.MeshBasicMaterial({visible:false}));hit.position.y=1.2;hit.userData.jar=key;g.add(hit);
+  const O=new THREE.InstancedMesh(oGeo,T('#E5484D'),count),H=new THREE.InstancedMesh(hGeo,T('#ffffff'),count*2);g.add(O);g.add(H);
+  const Oi=new THREE.InstancedMesh(oGeo,inkMat,count);Oi.instanceMatrix=O.instanceMatrix;g.add(Oi);
+  const mol=[];
+  const lat=[];const n3=Math.round(Math.cbrt(count));const sp=.125;for(let i=0;i<n3;i++)for(let j=0;j<n3;j++)for(let k=0;k<n3;k++){if(lat.length>=count)break;lat.push(new V3((i-(n3-1)/2)*sp+(k%2)*sp*.25,1.02+j*sp,(k-(n3-1)/2)*sp*.92));}
+  for(let i=0;i<count;i++){const L=lat[i%lat.length].clone();mol.push({p:L.clone(),v:new V3(),lat:L,q:new THREE.Quaternion().setFromEuler(new THREE.Euler(0,(i%4)*Math.PI/2,0)),w:new V3(rnd()-.5,rnd()-.5,rnd()-.5).normalize(),ph:rnd()*6});}
+  const J={key,g,O,H,mol,mode,temp:mode==='solid'?-10:mode==='liquid'?40:110,glass,hit};
+  if(mode!=='solid')mol.forEach((m,i)=>{m.p.set((rnd()-.5)*.7,1.0+rnd()*(mode==='gas'?.95:.35),(rnd()-.5)*.7);if(mode==='gas')m.v.set(rnd()-.5,rnd()-.5,rnd()-.5).normalize().multiplyScalar(.9);});
+  return J;}
+const pol=(deg,r,y)=>new V3(Math.sin(deg*D)*r,y,-Math.cos(deg*D)*r);
+const JARS={};
+JARS.solid=makeJar('solid',pol(ST.solid.ang,2.6,0),64,'solid');
+JARS.liquid=makeJar('liquid',pol(ST.liquid.ang,2.6,0),64,'liquid');
+JARS.gas=makeJar('gas',pol(ST.gas.ang,2.6,0),14,'gas');
+JARS.machine=makeJar('machine',pol(180,2.6,0),64,'solid');JARS.machine.temp=-10;
+KEYS.forEach(k=>sign(ST[k].e+' '+ST[k].w,ST[k].col,new V3(0,2.4,0),JARS[k].g));sign('🌡️ آلة الحرارة','#E5484D',new V3(0,2.4,0),JARS.machine.g);
+/* a real-world cue next to each jar: an ice cube, a glass of water, a kettle with steam */
+(function cues(){const ice=part(new THREE.BoxGeometry(.22,.22,.22),new THREE.MeshToonMaterial({color:'#bfeaff',gradientMap:grad,transparent:true,opacity:.85}),.55,.95,.35,JARS.solid.g);ice.rotation.set(.3,.5,.1);
+  const cup=part(new THREE.CylinderGeometry(.11,.09,.26,16,1,true),new THREE.MeshToonMaterial({color:'#ffffff',gradientMap:grad,transparent:true,opacity:.6,side:THREE.DoubleSide}),.55,.96,.35,JARS.liquid.g);part(new THREE.CylinderGeometry(.1,.085,.17,16),'#5fb8f0',.55,.93,.35,JARS.liquid.g);
+  const k=new THREE.Group();k.position.set(.55,.84,.35);JARS.gas.g.add(k);part(new THREE.SphereGeometry(.14,16,12),'#c9d2e3',0,.12,0,k);const sp=part(new THREE.CylinderGeometry(.02,.035,.16,8),'#c9d2e3',.15,.16,0,k);sp.rotation.z=-1;part(new THREE.TorusGeometry(.09,.015,6,16,Math.PI),'#1B2A4A',0,.27,0,k);})();
+const steam=[];for(let i=0;i<8;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:cTex(64,64,x=>{const g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64);}),transparent:true,depthWrite:false}));JARS.gas.g.add(s);steam.push({s,ph:i/8});}
+const allHits=Object.values(JARS).map(j=>j.hit);
+
+/* ---------- particle motion ---------- */
+const mo=new THREE.Object3D(),tq=new THREE.Quaternion(),hv=new V3();
+const cylR=.48,yMin=.92;
+function stepJar(J,dt,t){const m=J.mol,n=m.length;let mode=J.mode;
+  if(J.key==='machine'){mode=J.temp<0?'solid':J.temp<100?'liquid':'gas';if(mode!==J.mode){if(mode==='gas')m.forEach(x=>x.v.set(Math.random()-.5,Math.random()*.6,Math.random()-.5).normalize().multiplyScalar(.9));J.mode=mode;}}
+  const heat=J.key==='machine'?J.temp:(mode==='solid'?-10:mode==='liquid'?40:110);
+  if(mode==='solid'){const amp=.004+clamp((heat+20)/20,0,1)*.012;m.forEach((x,i)=>{const tgt=x.lat;x.p.lerp(new V3(tgt.x+Math.sin(t*14+x.ph)*amp,tgt.y+Math.cos(t*16+x.ph*1.3)*amp,tgt.z+Math.sin(t*12+x.ph*.7)*amp),Math.min(1,dt*(J.key==='machine'?2.5:20)));});}
+  else if(mode==='liquid'){const sp=.06+clamp(heat/100,0,1)*.08;for(let i=0;i<n;i++){const a=m[i];a.v.x+=(Math.random()-.5)*sp*dt*40;a.v.y+=((Math.random()-.5)*sp*40-1.2)*dt;a.v.z+=(Math.random()-.5)*sp*dt*40;
+      for(let j=i+1;j<n;j++){const b=m[j];const dx=a.p.x-b.p.x,dy=a.p.y-b.p.y,dz=a.p.z-b.p.z;const d2=dx*dx+dy*dy+dz*dz;if(d2<.0144&&d2>1e-6){const d=Math.sqrt(d2),f=(.12-d)*6;a.v.x+=dx/d*f;a.v.y+=dy/d*f;a.v.z+=dz/d*f;b.v.x-=dx/d*f;b.v.y-=dy/d*f;b.v.z-=dz/d*f;}}}
+    m.forEach(a=>{a.v.multiplyScalar(Math.max(0,1-dt*4));a.p.addScaledVector(a.v,dt);const r=Math.hypot(a.p.x,a.p.z);if(r>cylR){a.p.x*=cylR/r;a.p.z*=cylR/r;a.v.x*=-.3;a.v.z*=-.3;}if(a.p.y<yMin){a.p.y=yMin;a.v.y*=-.2;}if(a.p.y>1.95){a.p.y=1.95;a.v.y=-Math.abs(a.v.y);}});}
+  else{const speed=.7+clamp((heat-100)/20,0,1)*.4;m.forEach(a=>{if(a.v.lengthSq()<.01)a.v.set(Math.random()-.5,Math.random()-.5,Math.random()-.5);a.v.setLength(speed);a.p.addScaledVector(a.v,dt);const r=Math.hypot(a.p.x,a.p.z);if(r>cylR){const nx=a.p.x/r,nz=a.p.z/r;const dot=a.v.x*nx+a.v.z*nz;if(dot>0){a.v.x-=2*dot*nx;a.v.z-=2*dot*nz;}a.p.x=nx*cylR;a.p.z=nz*cylR;}if(a.p.y<yMin){a.p.y=yMin;a.v.y=Math.abs(a.v.y);}if(a.p.y>1.98){a.p.y=1.98;a.v.y=-Math.abs(a.v.y);}});}
+  /* spin: still in ice, tumbling in water, spinning fast in vapour */
+  const spin=mode==='solid'?0:mode==='liquid'?1.2:4;
+  m.forEach((a,i)=>{if(spin){tq.setFromAxisAngle(a.w,spin*dt);a.q.premultiply(tq);}mo.position.copy(a.p);mo.quaternion.copy(a.q);mo.scale.setScalar(1);mo.updateMatrix();J.O.setMatrixAt(i,mo.matrix);
+    for(let s=0;s<2;s++){hv.set(Math.sin(HANG)*(s?1:-1)*HO,-Math.cos(HANG)*HO,0).applyQuaternion(a.q);mo.position.copy(a.p).add(hv);mo.updateMatrix();J.H.setMatrixAt(i*2+s,mo.matrix);}});
+  J.O.instanceMatrix.needsUpdate=true;J.H.instanceMatrix.needsUpdate=true;}
+
+/* ---------- audio ---------- */
+let AC=null,muted=false;function audio(){if(AC)return;try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+function tone(f,d,type,g,f2,delay){if(!AC||muted)return;const t0=AC.currentTime+(delay||0),o=AC.createOscillator(),gn=AC.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t0);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t0+d);gn.gain.setValueAtTime(.0001,t0);gn.gain.exponentialRampToValueAtTime(g||.07,t0+.02);gn.gain.exponentialRampToValueAtTime(.0001,t0+d);o.connect(gn);gn.connect(AC.destination);o.start(t0);o.stop(t0+d+.05);}
+const chime=()=>[660,880,1175].forEach((f,i)=>tone(f,.45,'triangle',.07,null,i*.08));const nope=()=>tone(240,.35,'triangle',.06,170);
+$('#btnSound').addEventListener('click',()=>{muted=!muted;$('#btnSound').textContent=muted?'🔇 الصوت':'🔊 الصوت';});
+let toastT;function toast(s){const el=$('#toast');el.textContent=s;el.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>el.style.opacity=0,2400);}
+
+/* ---------- looking around: finger or device ---------- */
+const look={yaw:0,pitch:-.08,fov:66},lookD={yaw:0,pitch:-.08,fov:66};let gyroOn=false,gyroOK=false,orient=null,yawOff=0,devYaw=0,devPitch=0,touched=false,autoPan=0;
+const _q=new THREE.Quaternion(),_q0=new THREE.Quaternion(),_q1=new THREE.Quaternion(-Math.sqrt(.5),0,0,Math.sqrt(.5)),_z=new V3(0,0,1),_e=new THREE.Euler();
+function readDevice(){if(!orient)return false;const a=(orient.alpha||0)*D,b=(orient.beta||0)*D,g=(orient.gamma||0)*D;const so=((screen.orientation&&screen.orientation.angle)||window.orientation||0)*D;_e.set(b,a,-g,'YXZ');_q.setFromEuler(_e);_q.multiply(_q1);_q.multiply(_q0.setFromAxisAngle(_z,-so));_e.setFromQuaternion(_q,'YXZ');devYaw=_e.y;devPitch=_e.x;return true;}
+function onOrient(e){if(e.alpha==null&&e.beta==null)return;orient=e;gyroOK=true;}
+async function setGyro(on){if(on){let perm='granted';try{if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function')perm=await DeviceOrientationEvent.requestPermission();}catch(e){perm='error';}
+    addEventListener('deviceorientation',onOrient,true);gyroOn=true;$('#btnGyro').classList.add('on');$('#btnGyro').textContent='📱 الحركة تعمل';
+    setTimeout(()=>{if(gyroOn&&!gyroOK){setGyro(false);toast(perm==='denied'?'لم يُسمح بالحركة. اسحب بإصبعك':'جهازك لا يدعم الحركة. اسحب بإصبعك');}else if(gyroOn){readDevice();yawOff=look.yaw-devYaw;toast('حرّك الجهاز حولك لتنظر 360° 📱');}},900);}
+  else{gyroOn=false;removeEventListener('deviceorientation',onOrient,true);$('#btnGyro').classList.remove('on');$('#btnGyro').textContent='📱 حرّك الجهاز';}}
+$('#btnGyro').addEventListener('click',()=>setGyro(!gyroOn));
+function faceJar(k,fov){const p=JARS[k].g.position;lookD.yaw=look.yaw+wrapA(Math.atan2(-p.x,-p.z)-look.yaw);lookD.pitch=-.05;lookD.fov=fov||46;if(gyroOn&&gyroOK){readDevice();yawOff=lookD.yaw-devYaw;}}
+const el=renderer.domElement,ptrs=new Map();let down=null,pinch=0;
+el.addEventListener('pointerdown',e=>{audio();ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptrs.size===1)down={t:performance.now(),m:0};else{down=null;const p=[...ptrs.values()];pinch=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);}});
+el.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;const pr=ptrs.get(e.pointerId),dx=e.clientX-pr.x,dy=e.clientY-pr.y;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===1&&down){down.m+=Math.abs(dx)+Math.abs(dy);if(down.m>6){touched=true;$('#coach').classList.add('hidden');}const k=.0042*look.fov/66;if(gyroOn&&gyroOK){yawOff+=dx*k;return;}lookD.yaw+=dx*k;look.yaw+=dx*k*.6;lookD.pitch=clamp(lookD.pitch+dy*k,-1.2,1.2);look.pitch=clamp(look.pitch+dy*k*.6,-1.2,1.2);}
+  else if(ptrs.size===2){const p=[...ptrs.values()];const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);if(pinch)lookD.fov=clamp(lookD.fov*pinch/d,28,85);pinch=d;}});
+el.addEventListener('pointerup',e=>{if(down&&ptrs.size===1&&down.m<10&&performance.now()-down.t<500)tap(e.clientX,e.clientY);ptrs.delete(e.pointerId);if(!ptrs.size)down=null;});
+el.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId);down=null;});
+el.addEventListener('wheel',e=>{e.preventDefault();lookD.fov=clamp(lookD.fov*(1+clamp(e.deltaY,-120,120)*.001),28,85);},{passive:false});
+const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
+function tap(cx,cy){if(document.querySelector('.overlay:not(.hidden)'))return;ndc.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(ndc,camera);const h=ray.intersectObjects(allHits)[0];if(!h)return;const k=h.object.userData.jar;if(k==='machine')openMachine();else openObs(k);}
+
+/* ---------- observing a jar: answer three questions by watching ---------- */
+let cur=null,dimI=0,tries=0;
+function openObs(k){closeMachine();cur=k;dimI=DIM.findIndex(d=>!obsDone[k][d.k]);if(dimI<0)dimI=3;tries=0;faceJar(k,52);tone(520,.15,'sine',.05);renderObs();$('#obs').classList.remove('hidden');}
+function closeObs(){cur=null;$('#obs').classList.add('hidden');lookD.fov=66;}
+$('#oClose').addEventListener('click',closeObs);
+function renderObs(){const s=ST[cur];$('#oEm').textContent=s.e;$('#oTitle').textContent=s.n+': '+s.w;const B=$('#oBody');B.innerHTML='';
+  if(dimI>=3){$('#oStep').textContent='اكتملت ملاحظاتك ✓';const p=document.createElement('div');p.id='oSum';p.textContent=s.sum;B.appendChild(p);const f=document.createElement('div');f.className='fact';f.textContent='✨ هل تعلم؟ '+s.fact;B.appendChild(f);
+    const a=document.createElement('div');a.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:10px';const nx=KEYS.find(k=>DIM.some(d=>!obsDone[k][d.k]));
+    if(nx){const b=document.createElement('button');b.className='btn small';b.textContent='التالي: '+ST[nx].w+' '+ST[nx].e;b.addEventListener('click',()=>openObs(nx));a.appendChild(b);}else{const b=document.createElement('button');b.className='btn alt small';b.textContent='📋 افتح جدول المقارنة';b.addEventListener('click',()=>{closeObs();openTable();});a.appendChild(b);}
+    B.appendChild(a);return;}
+  const d=DIM[dimI];$('#oStep').textContent='الملاحظة '+(dimI+1)+' من 3: '+d.t;const q=document.createElement('div');q.id='oQ';q.textContent=d.q;B.appendChild(q);
+  const o=document.createElement('div');o.className='opts';d.o.forEach(([v,ic,l])=>{const b=document.createElement('button');b.className='opt';b.innerHTML='<span class="ic">'+ic+'</span><span>'+l+'</span>';b.addEventListener('click',()=>pick(d,v,b));o.appendChild(b);});B.appendChild(o);
+  const h=document.createElement('div');h.id='oHint';h.className='hidden';B.appendChild(h);}
+function pick(d,v,b){const ok=ST[cur].a[d.k]===v;if(ok){b.classList.add('good');chime();if(tries===0)firstOK[cur+d.k]=true;obsDone[cur][d.k]=v;count();setTimeout(()=>{dimI++;tries=0;renderObs();},700);}
+  else{b.classList.add('bad');nope();tries++;const h=$('#oHint');h.textContent='🔍 '+HINT[d.k];h.classList.remove('hidden');setTimeout(()=>b.classList.remove('bad'),500);}}
+function count(){const n=KEYS.reduce((s,k)=>s+DIM.filter(d=>obsDone[k][d.k]).length,0);$('#cnt').textContent=n+' من 9';return n;}
+
+/* ---------- the comparison table ---------- */
+function openTable(){const t=$('#cmp');let h='<tr><th class="r"></th><th class="s">🧊 صلب</th><th class="l">💧 سائل</th><th class="g">☁️ غاز</th></tr>';
+  DIM.forEach(d=>{h+='<tr><th class="r">'+d.t+'</th>'+KEYS.map(k=>{const v=obsDone[k][d.k];return '<td class="'+(v?'f':'')+'">'+(v?LABEL[v]+(firstOK[k+d.k]?' ⭐':''):'؟')+'</td>';}).join('')+'</tr>';});t.innerHTML=h;
+  const n=count();$('#tMsg').textContent=n<9?'لاحظت '+n+' من 9. التفت إلى الجرار وأكمل ملاحظاتك.':'قارنت بين الحالات الثلاث! لاحظ: كلما زادت حرارة الماء، تحركت جسيماته أسرع. جرّب «آلة الحرارة»، ثم «تحدّي المقارنة».';
+  $('#table').classList.remove('hidden');}
+$('#btnTable').addEventListener('click',openTable);$('#tClose').addEventListener('click',()=>$('#table').classList.add('hidden'));
+
+/* ---------- the heat machine: watch one jar change state ---------- */
+const STATE_TXT=t=>t<0?['🧊 ثلج (صلب)','الجسيمات منتظمة وتهتز في أماكنها. كلما سخّنت أكثر، اهتزت أسرع.']:t<100?['💧 ماء (سائل)','عند 0° ذاب الثلج: صارت الجسيمات تنزلق وتتحرك حول بعضها، وتسرع كلما ارتفعت الحرارة.']:['☁️ بخار (غاز)','عند 100° غلى الماء: انطلقت الجسيمات بسرعة، وتباعدت، وانتشرت في كل الجرة.'];
+let lastState='';
+function updMachine(){const t=+$('#temp').value;JARS.machine.temp=t;$('#tempVal').textContent=t+'°';const[s,x]=STATE_TXT(t);$('#mState').textContent='الحالة الآن: '+s;$('#mText').textContent=x;if(s!==lastState&&lastState){chime();toast(s);}lastState=s;}
+$('#temp').addEventListener('input',updMachine);
+function openMachine(){closeObs();faceJar('machine',46);updMachine();$('#mach').classList.remove('hidden');}
+function closeMachine(){$('#mach').classList.add('hidden');}
+$('#btnMachine').addEventListener('click',openMachine);$('#mClose').addEventListener('click',()=>{closeMachine();lookD.fov=66;});
+
+/* ---------- the challenge: compare and decide (criterion: 5 of 6) ---------- */
+const QZ=[{pic:'solid',q:'انظر إلى الجسيمات: في أي حالة هي؟',a:'solid'},{q:'في أي حالة تكون الجسيمات متباعدة جداً؟',a:'gas'},{pic:'liquid',q:'انظر إلى الجسيمات: في أي حالة هي؟',a:'liquid'},
+  {q:'في أي حالة تهتز الجسيمات في أماكنها فقط؟',a:'solid'},{pic:'gas',q:'انظر إلى الجسيمات: في أي حالة هي؟',a:'gas'},{q:'في أي حالة تكون الجسيمات متقاربة لكنها تنزلق حول بعضها؟',a:'liquid'}];
+const WHY={solid:'في الحالة الصلبة الجسيمات منتظمة ومتقاربة وتهتز في أماكنها.',liquid:'في الحالة السائلة الجسيمات متقاربة وغير منتظمة وتنزلق حول بعضها.',gas:'في الحالة الغازية الجسيمات متباعدة جداً وتتحرك بسرعة في كل الاتجاهات.'};
+let qi=0,qs=0,qAns=false,deck=[],qPic=null;
+function openQuiz(){closeObs();closeMachine();deck=QZ.slice().sort(()=>Math.random()-.5);qi=0;qs=0;showQ();$('#quiz').classList.remove('hidden');}
+function showQ(){qAns=false;$('#qFb').textContent='';$('#qNext').classList.add('hidden');document.querySelectorAll('#qOpts button').forEach(b=>{b.classList.remove('good','bad');b.disabled=false;});$('#qOpts').classList.remove('hidden');
+  if(qi>=deck.length){const ok=qs>=5;$('#qProg').textContent='';$('#qCanvas').classList.add('hidden');$('#qOpts').classList.add('hidden');$('#qText').innerHTML=(ok?'🏅 ':'💪 ')+'أجبت '+qs+' من '+deck.length+' إجابة صحيحة';
+    $('#qFb').textContent=ok?'أحسنت! أنت تقارن بين جسيمات الماء في حالاته الثلاث مثل العلماء.':'جيد! ارجع إلى الجرار وراقبها مرة أخرى، ثم حاول لتصل إلى 5 من 6.';$('#qNext').textContent='حاول مرة أخرى';$('#qNext').classList.remove('hidden');if(ok)chime();return;}
+  const it=deck[qi];$('#qProg').textContent='السؤال '+(qi+1)+' من '+deck.length;$('#qText').textContent=it.q;qPic=it.pic||null;$('#qCanvas').classList.toggle('hidden',!qPic);if(qPic)initPic(qPic);}
+document.querySelectorAll('#qOpts button').forEach(b=>b.addEventListener('click',()=>{if(qAns)return;const it=deck[qi];const ok=b.dataset.s===it.a;
+  if(ok){qAns=true;qs++;b.classList.add('good');chime();$('#qFb').textContent='✓ صحيح! '+WHY[it.a];$('#qNext').textContent='التالي';$('#qNext').classList.remove('hidden');}
+  else{qAns=true;b.classList.add('bad');nope();document.querySelector('#qOpts button[data-s="'+it.a+'"]').classList.add('good');$('#qFb').textContent='✗ الإجابة: '+ST[it.a].n+'. '+WHY[it.a];$('#qNext').textContent='التالي';$('#qNext').classList.remove('hidden');}}));
+$('#qNext').addEventListener('click',()=>{if(qi>=deck.length){openQuiz();return;}qi++;showQ();});$('#qClose').addEventListener('click',()=>{$('#quiz').classList.add('hidden');qPic=null;});
+$('#btnQuiz').addEventListener('click',openQuiz);
+/* tiny 2D particle pictures for the picture questions */
+const qc=$('#qCanvas'),qx=qc.getContext('2d');let pts=[];
+function initPic(k){pts=[];const W=720,H=360;if(k==='solid'){for(let i=0;i<8;i++)for(let j=0;j<4;j++)pts.push({bx:150+i*60,by:90+j*60,x:0,y:0,vx:0,vy:0});}
+  else if(k==='liquid'){for(let i=0;i<30;i++)pts.push({x:120+Math.random()*480,y:150+Math.random()*190,vx:(Math.random()-.5)*60,vy:(Math.random()-.5)*60});}
+  else{for(let i=0;i<7;i++)pts.push({x:80+Math.random()*560,y:50+Math.random()*260,vx:(Math.random()-.5)*420,vy:(Math.random()-.5)*420});}}
+function drawPic(dt,t){if(!qPic||$('#quiz').classList.contains('hidden'))return;const W=720,H=360;qx.clearRect(0,0,W,H);qx.fillStyle='#f3f9fd';qx.fillRect(0,0,W,H);qx.strokeStyle='#1B2A4A';qx.lineWidth=4;qx.strokeRect(60,20,600,325);
+  pts.forEach((p,i)=>{if(qPic==='solid'){p.x=p.bx+Math.sin(t*16+i)*3;p.y=p.by+Math.cos(t*14+i*1.7)*3;}
+    else if(qPic==='liquid'){p.vx+=(Math.random()-.5)*400*dt;p.vy+=((Math.random()-.5)*400+120)*dt;p.vx*=.96;p.vy*=.96;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.x<90){p.x=90;p.vx*=-1;}if(p.x>630){p.x=630;p.vx*=-1;}if(p.y>318){p.y=318;p.vy*=-.5;}if(p.y<150){p.y=150;p.vy*=-.5;}}
+    else{p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.x<90||p.x>630)p.vx*=-1;if(p.y<48||p.y>318)p.vy*=-1;}
+    qx.fillStyle='#E5484D';qx.beginPath();qx.arc(p.x,p.y,17,0,Math.PI*2);qx.fill();qx.strokeStyle='#1B2A4A';qx.lineWidth=3;qx.stroke();
+    qx.fillStyle='#fff';[[-1,1],[1,1]].forEach(([sx])=>{qx.beginPath();qx.arc(p.x+sx*15,p.y+12,10,0,Math.PI*2);qx.fill();qx.stroke();});});}
+
+/* ---------- guidance ---------- */
+const turnTarget=()=>{if(!$('#obs').classList.contains('hidden')||!$('#mach').classList.contains('hidden'))return null;const k=KEYS.find(k=>DIM.some(d=>!obsDone[k][d.k]));return k?JARS[k].g.position:null;};
+$('#btnNext').addEventListener('click',()=>{const k=KEYS.find(k=>DIM.some(d=>!obsDone[k][d.k]));if(k){faceJar(k,52);toast('هنا: '+ST[k].n+' '+ST[k].e+'. المسها لتراقبها');}else{faceJar('machine',52);toast('أكملت الملاحظات! جرّب آلة الحرارة ثم التحدّي');}});
+let tour=-1;const TOUR=[
+  ()=>{faceJar('liquid',60);toast('أهلاً! أنا نجمون. لنقارن جسيمات الماء في حالاته الثلاث');},
+  ()=>openObs('solid'),()=>openObs('liquid'),()=>openObs('gas'),()=>{closeObs();openTable();},()=>{ $('#table').classList.add('hidden');openMachine();},()=>{closeMachine();openQuiz();}];
+$('#btnTour').addEventListener('click',()=>{tour=0;TOUR[0]();toast('جولة نجمون: راقب كل جرة وأجب عن الملاحظات');setTimeout(()=>{tour=1;TOUR[1]();},2600);});
+function start(withTour){audio();$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');if(withTour){$('#btnTour').click();}else{$('#coach').classList.remove('hidden');autoPan=1;setTimeout(()=>$('#coach').classList.add('hidden'),6500);setTimeout(()=>{touched=true;},12000);}}
+$('#btnGo').addEventListener('click',()=>start(false));$('#btnGoTour').addEventListener('click',()=>start(true));
+
+/* ---------- loop ---------- */
+let last=performance.now(),t=0;const tv=new V3();
+function animate(now){requestAnimationFrame(animate);const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
+  Object.values(JARS).forEach(J=>stepJar(J,dt,t));
+  steam.forEach(s=>{const k=(t*.35+s.ph)%1;s.s.position.set(.7+k*.15,1.1+k*.6,.35);const sc=.08+k*.25;s.s.scale.set(sc,sc,1);s.s.material.opacity=(1-k)*.8;});
+  if(gyroOn&&gyroOK&&readDevice()){lookD.yaw=look.yaw+wrapA(devYaw+yawOff-look.yaw);lookD.pitch=clamp(devPitch,-1.3,1.3);}else if(autoPan>0&&!touched){lookD.yaw+=dt*.5;look.yaw+=dt*.5;autoPan=Math.max(0,autoPan-dt/12);}
+  const k=1-Math.exp(-dt*(gyroOn&&gyroOK?14:4.5));look.yaw+=(lookD.yaw-look.yaw)*k;look.pitch+=(lookD.pitch-look.pitch)*k;look.fov+=(lookD.fov-look.fov)*k;
+  if(Math.abs(camera.fov-look.fov)>.01){camera.fov=look.fov;camera.updateProjectionMatrix();}const panel=!$('#obs').classList.contains('hidden')||!$('#mach').classList.contains('hidden');camera.rotation.set(look.pitch-(panel?.1:0),look.yaw,0,'YXZ');
+  let L=false,R=false;const tg=turnTarget();if(tg&&touched&&$('#hud').offsetParent!==null&&!document.querySelector('.overlay:not(.hidden)')){tv.copy(tg).setY(1.45);const loc=tv.clone().applyMatrix4(camera.matrixWorldInverse);const p=tv.clone().project(camera);if(loc.z>0||Math.abs(p.x)>.9){if(loc.x<0)L=true;else R=true;}}
+  $('#turnL').classList.toggle('hidden',!L);$('#turnR').classList.toggle('hidden',!R);
+  drawPic(dt,t);renderer.render(scene,camera);}
+requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
